@@ -1,0 +1,90 @@
+:root {
+  margin: 0;
+  padding: 0;
+}
+
+.login-container-principal {
+  display: grid;
+  grid-template-columns: 1fr;
+  grid-template-rows: 2fr 8fr;
+  height: 100vh;
+  grid-template-areas:
+    "title"
+    "sectionLogin";
+}
+
+.title {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  grid-area: title;
+  box-sizing: border-box;
+  font-size: 40px;
+  text-align: center;
+}
+
+.title-login {
+  font-size: 30px;
+  margin: 0;
+}
+
+fieldset {
+  border: none;
+  padding: 0;
+  margin: 0;
+}
+
+.login-container {
+  box-sizing: border-box;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  grid-area: sectionLogin;
+  padding: 10px;
+}
+
+.login {
+  min-width: 450px;
+  box-sizing: border-box;
+  padding: 30px;
+  border: 1px solid rgba(0, 0, 0, 0.25);
+  border-radius: 5px;
+  height: 450px;
+  max-height: 600px;
+}
+
+.login-content {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  margin-top: 50px;
+  box-sizing: border-box;
+}
+
+.input-login {
+  padding: 10px;
+  box-sizing: border-box;
+  width: 100%;
+  height: 40px;
+  border: 1px solid rgba(0, 0, 0, 0.25);
+  border-radius: 5px;
+}
+
+.legend-login {
+  margin-bottom: 10px;
+}
+
+.input-login:hover {
+  border: 1.5px solid rgba(0, 0, 0, 0.50);
+}
+
+.button-login {
+  box-sizing: border-box;
+  height: 40px;
+  border: none;
+  border-radius: 5px;
+  background-color: black;
+  color: white;
+  font-size: 15px;
+  font-weight: 500;
+}

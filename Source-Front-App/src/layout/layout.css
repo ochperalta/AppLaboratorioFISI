@@ -1,0 +1,102 @@
+.l-container {
+  display: grid;
+  grid-template-columns: 260px 1fr 1fr;
+  grid-template-rows: 60px 1fr 40px;
+  height: 100vh;
+  grid-template-areas: 
+    "lsidebar lheader lheader"
+    "lsidebar lmain lmain"
+    "lsidebar lfooter lfooter";
+}
+
+.l-header{
+  background: white;
+  grid-area: lheader;
+}
+
+.l-main{
+  background: whitesmoke;
+  grid-area: lmain;
+  padding: 10px;
+  overflow-y: auto;
+  height: 100%;
+}
+.l-footer{
+  background: white;
+  grid-area: lfooter;
+}
+
+.l-sidebar{
+  background: #111827;
+  grid-area: lsidebar;
+  display: flex;
+  flex-direction: column;
+}
+
+.l-sidebar header{
+  height: 60px;
+  display: flex;
+  align-content: stretch;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0px 10px;
+  color: white;
+}
+
+.sidebar-title{
+  display: flex;
+  justify-content: center;
+  width: 100%;
+}
+
+.sidebar-icon-header{
+  color: white;
+  font-size: 30px;
+  cursor: pointer;
+}
+
+.sidebar-icon-header:hover{
+  background-color: #1F2937;
+}
+
+.sidebar-content{
+  position: relative;
+  overflow-y: auto;
+  padding: 0px 10px;
+}
+
+.sidebar-option{
+  color:white;
+  background: #111827;
+  border: 1px solid #111827;
+  width: 100%;
+  height: 50px;
+  cursor: pointer;
+  display: grid;
+  grid-template-columns: 30px 1fr;
+  justify-content: center;
+  align-items: center;
+}
+
+.sidebar-option i{
+  font-size: 20px;
+}
+
+.sidebar-option span{
+  display: flex;
+  justify-content: flex-start;
+  padding-left: 20px;
+}
+
+.sidebar-option:hover{
+  border: 1px solid #1F2937;
+  background: #1F2937;
+}
+
+
+/* body{
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: system-ui;
+} */
