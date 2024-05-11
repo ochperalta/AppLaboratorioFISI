@@ -16,7 +16,7 @@ import {
   Tooltip,
   Pagination,
 } from "@nextui-org/react";
-import { columns, users, statusOptions } from "./data";
+import { columns, mobiliarios, statusOptions } from "../data/mobiliario.js";
 import { capitalize } from "./utils";
 
 const statusColorMap = {
@@ -24,7 +24,7 @@ const statusColorMap = {
   mantenimiento: "warning",
 };
 
-const INITIAL_VISIBLE_COLUMNS = ["name", "role", "status", "actions"];
+const INITIAL_VISIBLE_COLUMNS = ["uuid", "tipo", "cantidad","descripcion", "actions"];
 
 export default function Mobiliario() {
   const [filterValue, setFilterValue] = React.useState("");
@@ -33,7 +33,7 @@ export default function Mobiliario() {
   const [statusFilter, setStatusFilter] = React.useState("all");
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
   const [sortDescriptor, setSortDescriptor] = React.useState({
-    column: "age",
+    column: "uuid",
     direction: "ascending",
   });
   const [page, setPage] = React.useState(1);
@@ -47,21 +47,21 @@ export default function Mobiliario() {
   }, [visibleColumns]);
 
   const filteredItems = React.useMemo(() => {
-    let filteredUsers = [...users];
+    let filteredMobiliarios = [...mobiliarios];
 
     if (hasSearchFilter) {
-      filteredUsers = filteredUsers.filter((user) =>
-        user.name.toLowerCase().includes(filterValue.toLowerCase()),
+      filteredMobiliarios = filteredMobiliarios.filter((item) =>
+        item.tipo.toLowerCase().includes(filterValue.toLowerCase()),
       );
     }
     if (statusFilter !== "all" && Array.from(statusFilter).length !== statusOptions.length) {
-      filteredUsers = filteredUsers.filter((user) =>
-        Array.from(statusFilter).includes(user.status),
+      filteredMobiliarios = filteredMobiliarios.filter((item) =>
+        Array.from(statusFilter).includes(item.estado),
       );
     }
 
-    return filteredUsers;
-  }, [users, filterValue, statusFilter]);
+    return filteredMobiliarios;
+  }, [mobiliarios, filterValue, statusFilter]);
 
   const pages = Math.ceil(filteredItems.length / rowsPerPage);
 
@@ -86,20 +86,17 @@ export default function Mobiliario() {
     const cellValue = user[columnKey];
 
     switch (columnKey) {
-      case "name":
+      case "tipo":
         return (
-          <p>{user.name}</p>
+          <p>{user.tipo}</p>
         );
-      case "role":
+      case "cantidad":
         return (
-          <div className="flex flex-col">
-            <p className="text-bold text-small capitalize">{cellValue}</p>
-            <p className="text-bold text-tiny capitalize text-default-400">{user.team}</p>
-          </div>
+          <p>{user.cantidad}</p>
         );
-      case "status":
+      case "estado":
         return (
-          <Chip className="capitalize" color={statusColorMap[user.status]} size="sm" variant="flat">
+          <Chip className="capitalize" color={statusColorMap[user.estado]} size="sm" variant="flat">
             {cellValue}
           </Chip>
         );
@@ -221,7 +218,7 @@ export default function Mobiliario() {
           </div>
         </div>
         <div className="flex justify-between items-center">
-          <span className="text-default-400 text-small">Total: {users.length} registros</span>
+          <span className="text-default-400 text-small">Total: {mobiliarios.length} registros</span>
           <label className="flex items-center text-default-400 text-small">
             Filas por página:
             <select
@@ -242,7 +239,7 @@ export default function Mobiliario() {
     statusFilter,
     visibleColumns,
     onRowsPerPageChange,
-    users.length,
+    mobiliarios.length,
     onSearchChange,
     hasSearchFilter,
   ]);
@@ -301,9 +298,9 @@ export default function Mobiliario() {
           </TableColumn>
         )}
       </TableHeader>
-      <TableBody emptyContent={"No users found"} items={sortedItems}>
+      <TableBody emptyContent={"No se encontraron mobiliarios"} items={sortedItems}>
         {(item) => (
-          <TableRow key={item.id}>
+          <TableRow key={item.uuid}>
             {(columnKey) => <TableCell>{renderCell(item, columnKey)}</TableCell>}
           </TableRow>
         )}

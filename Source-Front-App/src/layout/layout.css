@@ -1,72 +1,135 @@
 .l-container {
   display: grid;
-  grid-template-columns: 260px 1fr 1fr;
+  grid-template-columns: auto 1fr 1fr;
   grid-template-rows: 60px 1fr 40px;
   height: 100vh;
-  grid-template-areas: 
+  grid-template-areas:
     "lsidebar lheader lheader"
     "lsidebar lmain lmain"
     "lsidebar lfooter lfooter";
+  transition-duration: 0.6s;
 }
 
-.l-header{
+@media(width<600px) {
+
+  .l-header,
+  .l-main,
+  .l-footer {
+    margin-left: 70px;
+  }
+
+  .sidebar-title {
+    width: 100% !important;
+    opacity: 1 !important;
+  }
+
+  #btnSidebar {
+    display: none;
+  }
+
+  .l-sidebar {
+    position: fixed;
+    z-index: 100;
+    height: 100vh;
+  }
+}
+
+.l-header {
   background: white;
   grid-area: lheader;
 }
 
-.l-main{
+.l-main {
   background: whitesmoke;
   grid-area: lmain;
   padding: 10px;
   overflow-y: auto;
   height: 100%;
 }
-.l-footer{
+
+.l-footer {
   background: white;
   grid-area: lfooter;
 }
 
-.l-sidebar{
+.l-sidebar {
+  width: 260px;
   background: #111827;
   grid-area: lsidebar;
   display: flex;
   flex-direction: column;
+  transition-duration: 0.5s;
 }
 
-.l-sidebar header{
+.l-sidebar i {
+  transition-duration: 0.5s;
+}
+
+.l-sidebar div {
+  transition-duration: 0.5s;
+}
+
+.l-sidebar span {
+  transition-duration: 0.5s;
+  transition-property: width;
+}
+
+.l-sidebar.active {
+  width: 70px;
+}
+
+.l-sidebar.active div {
+  width: 0;
+  opacity: 0;
+}
+
+.l-sidebar.active span {
+  width: 0;
+  opacity: 0;
+}
+
+
+
+.l-sidebar button {
+  transition-duration: 2s;
+}
+
+.l-sidebar header {
   height: 60px;
   display: flex;
   align-content: stretch;
   justify-content: space-between;
   align-items: center;
-  padding: 0px 10px;
+  padding: 0px 20px;
   color: white;
 }
 
-.sidebar-title{
+.sidebar-title {
   display: flex;
   justify-content: center;
   width: 100%;
 }
 
-.sidebar-icon-header{
+.sidebar-icon-header {
   color: white;
   font-size: 30px;
   cursor: pointer;
 }
 
-.sidebar-icon-header:hover{
+.sidebar-icon-header:hover {
   background-color: #1F2937;
 }
 
-.sidebar-content{
+.sidebar-content {
   position: relative;
   overflow-y: auto;
-  padding: 0px 10px;
+  overflow-x: hidden;
+
 }
 
-.sidebar-option{
-  color:white;
+
+.sidebar-option {
+  color: white;
   background: #111827;
   border: 1px solid #111827;
   width: 100%;
@@ -76,19 +139,21 @@
   grid-template-columns: 30px 1fr;
   justify-content: center;
   align-items: center;
+  padding: 0px 44px;
+  margin: 0px 0px;
 }
 
-.sidebar-option i{
+.sidebar-option i {
   font-size: 20px;
 }
 
-.sidebar-option span{
+.sidebar-option span {
   display: flex;
   justify-content: flex-start;
   padding-left: 20px;
 }
 
-.sidebar-option:hover{
+.sidebar-option:hover {
   border: 1px solid #1F2937;
   background: #1F2937;
 }

@@ -14,7 +14,7 @@ export default function Navbar() {
   };
   return (
     <nav className="flex items-center h-full">
-      <section className="basis-10/12 text-2xl px-6">Plataforma de Gestión de Logística</section>
+      <section className="basis-10/12 text-xl px-6">Plataforma de Gestión de Logística</section>
       <section className="basis-2/12 flex justify-end px-6">
         <Dropdown placement="bottom-end">
           <DropdownTrigger>
@@ -31,7 +31,7 @@ export default function Navbar() {
           <DropdownMenu aria-label="Profile Actions" variant="flat">
             <DropdownItem key="profile" className="h-14 gap-2">
               <p className="font-semibold">Registrado como</p>
-              <p className="font-semibold">zoey@example.com</p>
+              <p className="font-semibold">oscar.chumpitaz2@unmsm.edu.pe</p>
             </DropdownItem>
             <DropdownItem key="configurations">Configuración</DropdownItem>
             <DropdownItem key="logout" color="danger" onClick={handleLogout}>
