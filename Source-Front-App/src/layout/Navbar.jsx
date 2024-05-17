@@ -30,7 +30,7 @@ export default function Navbar() {
           <DropdownMenu aria-label="Profile Actions" variant="flat">
             <DropdownItem key="profile" className="h-14 gap-2">
               <p className="font-semibold">Registrado como</p>
-              <p className="font-semibold">oscar.chumpitaz2@unmsm.edu.pe</p>
+              <p className="font-semibold">{user.email}</p>
             </DropdownItem>
             <DropdownItem key="configurations">Configuración</DropdownItem>
             <DropdownItem key="logout" color="danger" onClick={handleLogout}>
