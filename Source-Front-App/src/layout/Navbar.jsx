@@ -23,9 +23,8 @@ export default function Navbar() {
               as="button"
               className="transition-transform"
               color="primary"
-              name="Jason Hughes"
+              name="O"
               size="sm"
-              src="https://yt3.ggpht.com/ytc/AIdro_k63hxNaym7o7XHBFip_GlgbEYCtcaIVS7oac5PdTO1zFbyUM1FWY_IKcO0pMDJ756b2Q=s88-c-k-c0x00ffffff-no-rj"
             />
           </DropdownTrigger>
           <DropdownMenu aria-label="Profile Actions" variant="flat">

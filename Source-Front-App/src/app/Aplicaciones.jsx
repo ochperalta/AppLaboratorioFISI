@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import {
   Table,
   TableHeader,
@@ -16,24 +16,18 @@ import {
   Tooltip,
   Pagination,
 } from "@nextui-org/react";
-import { columns, users, statusOptions } from "./data";
 import { capitalize } from "./utils";
+import { getAplicaciones, columns } from "../data/aplicaciones";
 
-const statusColorMap = {
-  activo: "success",
-  mantenimiento: "warning",
-};
-
-const INITIAL_VISIBLE_COLUMNS = ["name", "role", "status", "actions"];
+const INITIAL_VISIBLE_COLUMNS = ["nombre", "version", "descripcion", "categoria", "actions"];
 
 export default function Aplicaciones() {
   const [filterValue, setFilterValue] = React.useState("");
   const [selectedKeys, setSelectedKeys] = React.useState(new Set([]));
   const [visibleColumns, setVisibleColumns] = React.useState(new Set(INITIAL_VISIBLE_COLUMNS));
-  const [statusFilter, setStatusFilter] = React.useState("all");
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
   const [sortDescriptor, setSortDescriptor] = React.useState({
-    column: "age",
+    column: "nombre",
     direction: "ascending",
   });
   const [page, setPage] = React.useState(1);
@@ -46,22 +40,30 @@ export default function Aplicaciones() {
     return columns.filter((column) => Array.from(visibleColumns).includes(column.uid));
   }, [visibleColumns]);
 
+  const [aplicaciones, setAplicaciones] = React.useState([]);
+
+  function getAllAplicaciones() {
+    getAplicaciones()
+    .then((data) => {
+      setAplicaciones(data); // Actualiza el estado con los datos obtenidos
+    })
+    .catch((error) => {
+      console.error("Error al obtener datos de la API:", error);
+    });
+  }
+
   const filteredItems = React.useMemo(() => {
-    let filteredUsers = [...users];
+    getAllAplicaciones();
+    let filteredUsers = [...aplicaciones];
 
     if (hasSearchFilter) {
-      filteredUsers = filteredUsers.filter((user) =>
-        user.name.toLowerCase().includes(filterValue.toLowerCase()),
-      );
-    }
-    if (statusFilter !== "all" && Array.from(statusFilter).length !== statusOptions.length) {
-      filteredUsers = filteredUsers.filter((user) =>
-        Array.from(statusFilter).includes(user.status),
+      filteredUsers = filteredUsers.filter((item) =>
+        item.nombre.toLowerCase().includes(filterValue.toLowerCase()),
       );
     }
 
     return filteredUsers;
-  }, [users, filterValue, statusFilter]);
+  }, [aplicaciones, filterValue]);
 
   const pages = Math.ceil(filteredItems.length / rowsPerPage);
 
@@ -82,27 +84,10 @@ export default function Aplicaciones() {
     });
   }, [sortDescriptor, items]);
 
-  const renderCell = React.useCallback((user, columnKey) => {
-    const cellValue = user[columnKey];
+  const renderCell = React.useCallback((item, columnKey) => {
+    const cellValue = item[columnKey];
 
     switch (columnKey) {
-      case "name":
-        return (
-          <p>{user.name}</p>
-        );
-      case "role":
-        return (
-          <div className="flex flex-col">
-            <p className="text-bold text-small capitalize">{cellValue}</p>
-            <p className="text-bold text-tiny capitalize text-default-400">{user.team}</p>
-          </div>
-        );
-      case "status":
-        return (
-          <Chip className="capitalize" color={statusColorMap[user.status]} size="sm" variant="flat">
-            {cellValue}
-          </Chip>
-        );
       case "actions":
         return (
           <div className="relative flex items-center gap-2">
@@ -172,28 +157,7 @@ export default function Aplicaciones() {
             onClear={() => onClear()}
             onValueChange={onSearchChange}
           />
-          <div className="flex gap-3">
-            <Dropdown>
-              <DropdownTrigger className="hidden sm:flex">
-                <Button endContent={<i className='bx bx-chevron-down' ></i>} variant="flat">
-                  Estado
-                </Button>
-              </DropdownTrigger>
-              <DropdownMenu
-                disallowEmptySelection
-                aria-label="Table Columns"
-                closeOnSelect={false}
-                selectedKeys={statusFilter}
-                selectionMode="multiple"
-                onSelectionChange={setStatusFilter}
-              >
-                {statusOptions.map((status) => (
-                  <DropdownItem key={status.uid} className="capitalize">
-                    {capitalize(status.name)}
-                  </DropdownItem>
-                ))}
-              </DropdownMenu>
-            </Dropdown>
+          <div className="flex gap-3">            
             <Dropdown>
               <DropdownTrigger className="hidden sm:flex">
                 <Button endContent={<i className='bx bx-chevron-down' ></i>} variant="flat">
@@ -221,7 +185,7 @@ export default function Aplicaciones() {
           </div>
         </div>
         <div className="flex justify-between items-center">
-          <span className="text-default-400 text-small">Total: {users.length} registros</span>
+          <span className="text-default-400 text-small">Total: {aplicaciones.length} registros</span>
           <label className="flex items-center text-default-400 text-small">
             Filas por página:
             <select
@@ -239,10 +203,9 @@ export default function Aplicaciones() {
     );
   }, [
     filterValue,
-    statusFilter,
     visibleColumns,
     onRowsPerPageChange,
-    users.length,
+    aplicaciones.length,
     onSearchChange,
     hasSearchFilter,
   ]);

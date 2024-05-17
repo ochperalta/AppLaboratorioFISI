@@ -1,0 +1,7 @@
+.card-laboratory{
+  cursor: pointer;
+}
+
+.card-laboratory:hover{
+  scale: 1.02;
+}
