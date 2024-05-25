@@ -93,7 +93,7 @@ export function Home() {
         </main>
         <footer className="l-footer">
           <section className="flex items-center h-full">
-            <p className="text-center w-full text-slate-400">®2024</p>
+            <p className="text-center w-full text-slate-400">© 2024 - FISI</p>
           </section>
 
         </footer>

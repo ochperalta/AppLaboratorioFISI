@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import {
   Table,
   TableHeader,
@@ -16,34 +16,18 @@ import {
   Tooltip,
   Pagination,
 } from "@nextui-org/react";
-import { columns, statusOptions, getMobiliarios } from "../data/mobiliario.js";
-import { capitalize } from "./utils";
-import { useParams } from "react-router-dom";
+import { capitalize } from "../utils";
+import { getAplicaciones, columns } from "../../data/aplicaciones";
 
-const statusColorMap = {
-  activo: "success",
-  mantenimiento: "warning",
-};
+const INITIAL_VISIBLE_COLUMNS = ["nombre", "version", "descripcion", "categoria", "actions"];
 
-const INITIAL_VISIBLE_COLUMNS = [
-  "uuid",
-  "tipo",
-  "cantidad",
-  "descripcion",
-  "estado",
-  "actions",
-];
-
-export default function Mobiliario() {
+export default function Aplicaciones() {
   const [filterValue, setFilterValue] = React.useState("");
   const [selectedKeys, setSelectedKeys] = React.useState(new Set([]));
-  const [visibleColumns, setVisibleColumns] = React.useState(
-    new Set(INITIAL_VISIBLE_COLUMNS)
-  );
-  const [statusFilter, setStatusFilter] = React.useState("all");
+  const [visibleColumns, setVisibleColumns] = React.useState(new Set(INITIAL_VISIBLE_COLUMNS));
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
   const [sortDescriptor, setSortDescriptor] = React.useState({
-    column: "uuid",
+    column: "nombre",
     direction: "ascending",
   });
   const [page, setPage] = React.useState(1);
@@ -53,43 +37,33 @@ export default function Mobiliario() {
   const headerColumns = React.useMemo(() => {
     if (visibleColumns === "all") return columns;
 
-    return columns.filter((column) =>
-      Array.from(visibleColumns).includes(column.uid)
-    );
+    return columns.filter((column) => Array.from(visibleColumns).includes(column.uid));
   }, [visibleColumns]);
 
-  const [mobiliarios, setMobiliarios] = React.useState([]);
+  const [aplicaciones, setAplicaciones] = React.useState([]);
 
-  function getAllMobiliarios() {
-    getMobiliarios()
-      .then((data) => {
-        setMobiliarios(data); // Actualiza el estado con los datos obtenidos
-      })
-      .catch((error) => {
-        console.error("Error al obtener datos de la API:", error);
-      });
+  function getAllAplicaciones() {
+    getAplicaciones()
+    .then((data) => {
+      setAplicaciones(data); // Actualiza el estado con los datos obtenidos
+    })
+    .catch((error) => {
+      console.error("Error al obtener datos de la API:", error);
+    });
   }
 
   const filteredItems = React.useMemo(() => {
-    getAllMobiliarios();
-    let filteredMobiliarios = [...mobiliarios];
+    getAllAplicaciones();
+    let filteredUsers = [...aplicaciones];
 
     if (hasSearchFilter) {
-      filteredMobiliarios = filteredMobiliarios.filter((item) =>
-        item.tipo.toLowerCase().includes(filterValue.toLowerCase())
-      );
-    }
-    if (
-      statusFilter !== "all" &&
-      Array.from(statusFilter).length !== statusOptions.length
-    ) {
-      filteredMobiliarios = filteredMobiliarios.filter((item) =>
-        Array.from(statusFilter).includes(item.estado)
+      filteredUsers = filteredUsers.filter((item) =>
+        item.nombre.toLowerCase().includes(filterValue.toLowerCase()),
       );
     }
 
-    return filteredMobiliarios;
-  }, [mobiliarios, filterValue, statusFilter]);
+    return filteredUsers;
+  }, [aplicaciones, filterValue]);
 
   const pages = Math.ceil(filteredItems.length / rowsPerPage);
 
@@ -110,41 +84,26 @@ export default function Mobiliario() {
     });
   }, [sortDescriptor, items]);
 
-  const renderCell = React.useCallback((user, columnKey) => {
-    const cellValue = user[columnKey];
+  const renderCell = React.useCallback((item, columnKey) => {
+    const cellValue = item[columnKey];
 
     switch (columnKey) {
-      case "tipo":
-        return <p>{user.tipo}</p>;
-      case "cantidad":
-        return <p>{user.cantidad}</p>;
-      case "estado":
-        return (
-          <Chip
-            className="capitalize"
-            color={statusColorMap[user.estado]}
-            size="sm"
-            variant="flat"
-          >
-            {cellValue}
-          </Chip>
-        );
       case "actions":
         return (
           <div className="relative flex items-center gap-2">
             <Tooltip content="Detalles">
               <span className="text-lg text-default-400 cursor-pointer active:opacity-50">
-                <i className="bx bxs-show"></i>
+                <i className='bx bxs-show' ></i>
               </span>
             </Tooltip>
             <Tooltip content="Editar">
               <span className="text-lg text-default-400 cursor-pointer active:opacity-50">
-                <i className="bx bxs-edit"></i>
+                <i className='bx bxs-edit' ></i>
               </span>
             </Tooltip>
             <Tooltip color="danger" content="Eliminar">
               <span className="text-lg text-danger cursor-pointer active:opacity-50">
-                <i className="bx bx-trash"></i>
+                <i className='bx bx-trash' ></i>
               </span>
             </Tooltip>
           </div>
@@ -181,9 +140,9 @@ export default function Mobiliario() {
   }, []);
 
   const onClear = React.useCallback(() => {
-    setFilterValue("");
-    setPage(1);
-  }, []);
+    setFilterValue("")
+    setPage(1)
+  }, [])
 
   const topContent = React.useMemo(() => {
     return (
@@ -193,42 +152,15 @@ export default function Mobiliario() {
             isClearable
             className="w-full sm:max-w-[44%]"
             placeholder="Búsqueda por nombre..."
-            startContent={<i className="bx bx-search"></i>}
+            startContent={<i className='bx bx-search' ></i>}
             value={filterValue}
             onClear={() => onClear()}
             onValueChange={onSearchChange}
           />
-          <div className="flex gap-3">
+          <div className="flex gap-3">            
             <Dropdown>
               <DropdownTrigger className="hidden sm:flex">
-                <Button
-                  endContent={<i className="bx bx-chevron-down"></i>}
-                  variant="flat"
-                >
-                  Estado
-                </Button>
-              </DropdownTrigger>
-              <DropdownMenu
-                disallowEmptySelection
-                aria-label="Table Columns"
-                closeOnSelect={false}
-                selectedKeys={statusFilter}
-                selectionMode="multiple"
-                onSelectionChange={setStatusFilter}
-              >
-                {statusOptions.map((status) => (
-                  <DropdownItem key={status.uid} className="capitalize">
-                    {capitalize(status.name)}
-                  </DropdownItem>
-                ))}
-              </DropdownMenu>
-            </Dropdown>
-            <Dropdown>
-              <DropdownTrigger className="hidden sm:flex">
-                <Button
-                  endContent={<i className="bx bx-chevron-down"></i>}
-                  variant="flat"
-                >
+                <Button endContent={<i className='bx bx-chevron-down' ></i>} variant="flat">
                   Columnas
                 </Button>
               </DropdownTrigger>
@@ -247,15 +179,13 @@ export default function Mobiliario() {
                 ))}
               </DropdownMenu>
             </Dropdown>
-            <Button color="primary" endContent={<i className="bx bx-plus"></i>}>
+            <Button color="primary" endContent={<i className='bx bx-plus' ></i>}>
               Añadir
             </Button>
           </div>
         </div>
         <div className="flex justify-between items-center">
-          <span className="text-default-400 text-small">
-            Total: {mobiliarios.length} registros
-          </span>
+          <span className="text-default-400 text-small">Total: {aplicaciones.length} registros</span>
           <label className="flex items-center text-default-400 text-small">
             Filas por página:
             <select
@@ -273,10 +203,9 @@ export default function Mobiliario() {
     );
   }, [
     filterValue,
-    statusFilter,
     visibleColumns,
     onRowsPerPageChange,
-    mobiliarios.length,
+    aplicaciones.length,
     onSearchChange,
     hasSearchFilter,
   ]);
@@ -294,22 +223,13 @@ export default function Mobiliario() {
             total={pages}
             onChange={setPage}
           />
+
         </div>
         <div className="hidden sm:flex w-[30%] justify-end gap-2">
-          <Button
-            isDisabled={pages === 1}
-            size="sm"
-            variant="flat"
-            onPress={onPreviousPage}
-          >
+          <Button isDisabled={pages === 1} size="sm" variant="flat" onPress={onPreviousPage}>
             Anterior
           </Button>
-          <Button
-            isDisabled={pages === 1}
-            size="sm"
-            variant="flat"
-            onPress={onNextPage}
-          >
+          <Button isDisabled={pages === 1} size="sm" variant="flat" onPress={onNextPage}>
             Siguiente
           </Button>
         </div>
@@ -324,7 +244,7 @@ export default function Mobiliario() {
       bottomContent={bottomContent}
       bottomContentPlacement="outside"
       classNames={{
-        base: "h-full",
+        base: "h-full"
       }}
       selectedKeys={selectedKeys}
       sortDescriptor={sortDescriptor}
@@ -344,18 +264,14 @@ export default function Mobiliario() {
           </TableColumn>
         )}
       </TableHeader>
-      <TableBody
-        emptyContent={"No se encontraron mobiliarios"}
-        items={sortedItems}
-      >
+      <TableBody emptyContent={"No users found"} items={sortedItems}>
         {(item) => (
-          <TableRow key={item.uuid}>
-            {(columnKey) => (
-              <TableCell>{renderCell(item, columnKey)}</TableCell>
-            )}
+          <TableRow key={item.id}>
+            {(columnKey) => <TableCell>{renderCell(item, columnKey)}</TableCell>}
           </TableRow>
         )}
       </TableBody>
     </Table>
   );
 }
+
