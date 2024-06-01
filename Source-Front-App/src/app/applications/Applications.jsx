@@ -14,40 +14,18 @@ import {
   DropdownItem,
   Chip,
   Tooltip,
-  Pagination,
 } from "@nextui-org/react";
-import { columns, statusOptions, getMobiliarios } from "../../data/mobiliario.js";
 import { capitalize } from "../utils.js";
-import { useParams } from "react-router-dom";
+import { columns, statusOptions, statusColorMap, INITIAL_VISIBLE_COLUMNS } from "./utils.js";
+import { getAll } from "../../services/applications.js";
 
-const statusColorMap = {
-  activo: "success",
-  mantenimiento: "warning",
-};
-
-const INITIAL_VISIBLE_COLUMNS = [
-  "uuid",
-  "tipo",
-  "cantidad",
-  "descripcion",
-  "estado",
-  "actions",
-];
-
-export default function Mobiliario() {
+export default function Applications() {
+  const [applications, setApplications] = React.useState([]);
   const [filterValue, setFilterValue] = React.useState("");
   const [selectedKeys, setSelectedKeys] = React.useState(new Set([]));
-  const [visibleColumns, setVisibleColumns] = React.useState(
-    new Set(INITIAL_VISIBLE_COLUMNS)
-  );
+  const [visibleColumns, setVisibleColumns] = React.useState(new Set(INITIAL_VISIBLE_COLUMNS));
   const [statusFilter, setStatusFilter] = React.useState("all");
-  const [rowsPerPage, setRowsPerPage] = React.useState(5);
-  const [sortDescriptor, setSortDescriptor] = React.useState({
-    column: "uuid",
-    direction: "ascending",
-  });
-  const [page, setPage] = React.useState(1);
-
+  const [sortDescriptor, setSortDescriptor] = React.useState({ column: "code", direction: "ascending", });
   const hasSearchFilter = Boolean(filterValue);
 
   const headerColumns = React.useMemo(() => {
@@ -58,85 +36,68 @@ export default function Mobiliario() {
     );
   }, [visibleColumns]);
 
-  const [mobiliarios, setMobiliarios] = React.useState([]);
-
-  function getAllMobiliarios() {
-    getMobiliarios()
-      .then((data) => {
-        setMobiliarios(data); // Actualiza el estado con los datos obtenidos
-      })
-      .catch((error) => {
-        console.error("Error al obtener datos de la API:", error);
-      });
+  async function getAllApplications() {
+    let data = await getAll()
+    console.log(data)
+    setApplications(data);
   }
 
+  React.useEffect(() => {
+    getAllApplications();
+  }, [location]);
+
   const filteredItems = React.useMemo(() => {
-    getAllMobiliarios();
-    let filteredMobiliarios = [...mobiliarios];
+    let filteredApplications = [...applications];
 
     if (hasSearchFilter) {
-      filteredMobiliarios = filteredMobiliarios.filter((item) =>
-        item.tipo.toLowerCase().includes(filterValue.toLowerCase())
+      filteredApplications = filteredApplications.filter((item) =>
+        item.code.toLowerCase().includes(filterValue.toLowerCase())
       );
     }
     if (
       statusFilter !== "all" &&
       Array.from(statusFilter).length !== statusOptions.length
     ) {
-      filteredMobiliarios = filteredMobiliarios.filter((item) =>
-        Array.from(statusFilter).includes(item.estado)
+      filteredApplications = filteredApplications.filter((item) =>
+        Array.from(statusFilter).includes(item.state)
       );
     }
 
-    return filteredMobiliarios;
-  }, [mobiliarios, filterValue, statusFilter]);
-
-  const pages = Math.ceil(filteredItems.length / rowsPerPage);
-
-  const items = React.useMemo(() => {
-    const start = (page - 1) * rowsPerPage;
-    const end = start + rowsPerPage;
-
-    return filteredItems.slice(start, end);
-  }, [page, filteredItems, rowsPerPage]);
+    return filteredApplications;
+  }, [applications, filterValue, statusFilter]);
 
   const sortedItems = React.useMemo(() => {
-    return [...items].sort((a, b) => {
+    return [...filteredItems].sort((a, b) => {
       const first = a[sortDescriptor.column];
       const second = b[sortDescriptor.column];
       const cmp = first < second ? -1 : first > second ? 1 : 0;
 
       return sortDescriptor.direction === "descending" ? -cmp : cmp;
     });
-  }, [sortDescriptor, items]);
+  }, [sortDescriptor, filteredItems]);
 
-  const renderCell = React.useCallback((user, columnKey) => {
-    const cellValue = user[columnKey];
+  const renderCell = React.useCallback((element, columnKey) => {
+    const cellValue = element[columnKey];
 
     switch (columnKey) {
-      case "tipo":
-        return <p>{user.tipo}</p>;
-      case "cantidad":
-        return <p>{user.cantidad}</p>;
-      case "estado":
+      case "openSource":
+        const openSource  = element.openSource ?"Si":"No"
+        return openSource
+      case "state":
+        const state = statusOptions.find(e => e.uid == element.state)
         return (
           <Chip
             className="capitalize"
-            color={statusColorMap[user.estado]}
+            color={statusColorMap[element.state]}
             size="sm"
             variant="flat"
           >
-            {cellValue}
+            {state.name}
           </Chip>
         );
       case "actions":
         return (
           <div className="relative flex items-center gap-2">
-            <Tooltip content="Detalles">
-              <span className="text-lg text-default-400 cursor-pointer active:opacity-50">
-                <i className="bx bxs-show"></i>
-              </span>
-            </Tooltip>
             <Tooltip content="Editar">
               <span className="text-lg text-default-400 cursor-pointer active:opacity-50">
                 <i className="bx bxs-edit"></i>
@@ -154,27 +115,9 @@ export default function Mobiliario() {
     }
   }, []);
 
-  const onNextPage = React.useCallback(() => {
-    if (page < pages) {
-      setPage(page + 1);
-    }
-  }, [page, pages]);
-
-  const onPreviousPage = React.useCallback(() => {
-    if (page > 1) {
-      setPage(page - 1);
-    }
-  }, [page]);
-
-  const onRowsPerPageChange = React.useCallback((e) => {
-    setRowsPerPage(Number(e.target.value));
-    setPage(1);
-  }, []);
-
   const onSearchChange = React.useCallback((value) => {
     if (value) {
       setFilterValue(value);
-      setPage(1);
     } else {
       setFilterValue("");
     }
@@ -182,7 +125,6 @@ export default function Mobiliario() {
 
   const onClear = React.useCallback(() => {
     setFilterValue("");
-    setPage(1);
   }, []);
 
   const topContent = React.useMemo(() => {
@@ -192,7 +134,7 @@ export default function Mobiliario() {
           <Input
             isClearable
             className="w-full sm:max-w-[44%]"
-            placeholder="Búsqueda por nombre..."
+            placeholder="Búsqueda por código..."
             startContent={<i className="bx bx-search"></i>}
             value={filterValue}
             onClear={() => onClear()}
@@ -254,20 +196,8 @@ export default function Mobiliario() {
         </div>
         <div className="flex justify-between items-center">
           <span className="text-default-400 text-small">
-            Total: {mobiliarios.length} registros
+            Total: {applications.length} registros
           </span>
-          <label className="flex items-center text-default-400 text-small">
-            Filas por página:
-            <select
-              className="bg-transparent outline-none text-default-400 text-small"
-              onChange={onRowsPerPageChange}
-            >
-              <option value="5">5</option>
-              <option value="10">10</option>
-              <option value="15">15</option>
-              <option value="20">20</option>
-            </select>
-          </label>
         </div>
       </div>
     );
@@ -275,54 +205,15 @@ export default function Mobiliario() {
     filterValue,
     statusFilter,
     visibleColumns,
-    onRowsPerPageChange,
-    mobiliarios.length,
+    applications.length,
     onSearchChange,
     hasSearchFilter,
   ]);
-
-  const bottomContent = React.useMemo(() => {
-    return (
-      <div className="py-2 px-2 flex justify-between items-center">
-        <div className="w-full">
-          <Pagination
-            isCompact
-            showControls
-            showShadow
-            color="primary"
-            page={page}
-            total={pages}
-            onChange={setPage}
-          />
-        </div>
-        <div className="hidden sm:flex w-[30%] justify-end gap-2">
-          <Button
-            isDisabled={pages === 1}
-            size="sm"
-            variant="flat"
-            onPress={onPreviousPage}
-          >
-            Anterior
-          </Button>
-          <Button
-            isDisabled={pages === 1}
-            size="sm"
-            variant="flat"
-            onPress={onNextPage}
-          >
-            Siguiente
-          </Button>
-        </div>
-      </div>
-    );
-  }, [selectedKeys, items.length, page, pages, hasSearchFilter]);
 
   return (
     <Table
       aria-label="Example table with custom cells, pagination and sorting"
       isHeaderSticky
-      bottomContent={bottomContent}
-      bottomContentPlacement="outside"
       classNames={{
         base: "h-full",
       }}
@@ -345,11 +236,11 @@ export default function Mobiliario() {
         )}
       </TableHeader>
       <TableBody
-        emptyContent={"No se encontraron mobiliarios"}
+        emptyContent={"No se encontraron applications"}
         items={sortedItems}
       >
         {(item) => (
-          <TableRow key={item.uuid}>
+          <TableRow key={item.id}>
             {(columnKey) => (
               <TableCell>{renderCell(item, columnKey)}</TableCell>
             )}

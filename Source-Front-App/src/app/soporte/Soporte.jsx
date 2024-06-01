@@ -23,7 +23,7 @@ export default function Soporte() {
         <CardBody>
           <p>Mensajes nuevos, 2</p>
           <p>Equipos: 20</p>
-          <p>Aplicaciones: 15</p>
+          <p>Applications: 15</p>
         </CardBody>
         <Divider />
       </Card>)

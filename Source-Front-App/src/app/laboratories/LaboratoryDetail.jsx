@@ -170,9 +170,9 @@ const users = [
   },
 ];
 
-const LaboratorioDetalle = ({ infoLaboratorio }) => {
+const LaboratoryDetail = () => {
   const { state } = useLocation();
-  const [laboratorio, setLaboratorio] = React.useState({});
+  const [laboratory, setLaboratory] = React.useState({});
   const [page, setPage] = React.useState(1);
   const rowsPerPage = 5;
 
@@ -208,8 +208,8 @@ const LaboratorioDetalle = ({ infoLaboratorio }) => {
 
   React.useEffect(() => {
     // Google Analytics
-    setLaboratorio(state);
-    console.log(laboratorio);
+    setLaboratory(state);
+    console.log(laboratory);
   }, [location]);
 
   return (
@@ -219,22 +219,22 @@ const LaboratorioDetalle = ({ infoLaboratorio }) => {
           <header>
             <h3 className="text-2xl mb-2">Información:</h3>
           </header>
-          <p>{laboratorio.nombre}</p>
-          <p>{laboratorio.pabellon}</p>
+          <p>{laboratory.name}</p>
+          <p>{laboratory.pavilion}</p>
           <p>
-            Aula: {laboratorio.aula}- {laboratorio.piso}
+            Aula: {laboratory.classroom} - {laboratory.floor}
           </p>
-          <p>Aplicaciones: {laboratorio.aplicaciones}</p>
-          <p>Equipos(PC): {laboratorio.equipos}</p>
-          <p>Mobiliario: {laboratorio.equipos}</p>
+          <p>Applications: {laboratory.applications}</p>
+          <p>Equipos(PC): {laboratory.equipos}</p>
+          <p>Equipment: {laboratory.equipos}</p>
         </section>
         <section className="detalle-tables">
           <Accordion isCompact defaultExpandedKeys={["2"]}>
             <AccordionItem
               key="1"
-              aria-label="Aplicaciones"
-              title="Aplicaciones"
-              subtitle={`Aplicaciones: ${laboratorio.aplicaciones}`}
+              aria-label="Applications"
+              title="Applications"
+              subtitle={`Applications: ${laboratory.applications}`}
             >
               <div className="px-4 pb-4">
                 <div className="flex w-ful justify-end mb-4">
@@ -287,7 +287,7 @@ const LaboratorioDetalle = ({ infoLaboratorio }) => {
               key="2"
               aria-label="Equipos (PC)"
               title="Equipos (PC)" 
-              subtitle={`Equipos (PC): ${laboratorio.equipos}`}
+              subtitle={`Equipos (PC): ${laboratory.equipos}`}
             >
               <div className="px-4 pb-4">
                 <div className="flex w-ful justify-end mb-4">
@@ -338,9 +338,9 @@ const LaboratorioDetalle = ({ infoLaboratorio }) => {
             </AccordionItem>
             <AccordionItem
               key="3"
-              aria-label="Mobiliarios"
-              title="Mobiliarios"
-              subtitle={`Mobiliarios: ${laboratorio.equipos}`}
+              aria-label="Equipment"
+              title="Equipment"
+              subtitle={`Equipment: ${laboratory.equipos}`}
             >
               <div className="px-4 pb-4">
                 <div className="flex w-ful justify-end mb-4">
@@ -396,4 +396,4 @@ const LaboratorioDetalle = ({ infoLaboratorio }) => {
   );
 };
 
-export default LaboratorioDetalle;
+export default LaboratoryDetail;

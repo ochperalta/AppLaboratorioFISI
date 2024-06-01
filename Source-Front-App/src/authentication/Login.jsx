@@ -52,7 +52,7 @@ export function Login() {
     <>
 
       <div className='login-container-principal'>
-        <header className='title'>Gestión Lógistica: Laboratorios FISI</header>
+        <header className='title'>Gestión Lógistica: Laboratories FISI</header>
         <section className='login-container'>
           <div className='login'>
             <h2 className='title-login'>Iniciar sesión</h2>

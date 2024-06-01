@@ -5,7 +5,7 @@ import { Link, Outlet } from 'react-router-dom';
 
 export function Home() {
   const [sidebar, setSidebar] = useState(null)
-  const [statebtnSidebar, setstatebtnSidebar] = useState(false);
+  const [statebtnSidebar, setstatebtnSidebar] = useState(false);  
 
   useEffect(() => {
     setSidebar(document.querySelector('#sidebar'));
@@ -71,14 +71,19 @@ export function Home() {
                 <i className='bx bx-server' ></i><span>Laboratorios</span>
               </button>
             </Link>
-            <Link className="link-option" to="mobiliario">
+            <Link className="link-option" to="mobiliarios">
               <button className="sidebar-option">
-                <i className='bx bx-desktop'></i><span>Mobiliario</span>
+                <i className='bx bx-desktop'></i><span>Equipos / Mobiliario</span>
               </button>
             </Link>
             <Link className="link-option" to="aplicaciones">
               <button className="sidebar-option">
                 <i className='bx bxs-pyramid'></i><span>Aplicaciones</span>
+              </button>
+            </Link>
+            <Link className="link-option" to="computadoras">
+              <button className="sidebar-option">
+                <i className='bx bx-support' ></i><span>Computadoras</span>
               </button>
             </Link>
             <Link className="link-option" to="soporte">
